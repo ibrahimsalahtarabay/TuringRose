@@ -134,7 +134,7 @@ def analyze_and_display_data():
     from analysis import analyze_ticker
     from sentiment import analyze_sentiment, get_company_name
     from fundamental_analysis import analyze_fundamentals
-    from ui_components import (display_export_options)
+    #from ui_components import (display_export_options)
     
     # Get settings from session state
     indicators = st.session_state.get("indicators_used", [])
@@ -439,7 +439,7 @@ def analyze_and_display_data():
     # Store overall results in session state for export
     st.session_state["overall_results"] = overall_results
 
-    display_export_options(st.session_state.get("stock_data", {}), overall_results)
+    #display_export_options(st.session_state.get("stock_data", {}), overall_results)
 
 # Add a function for rendering static pages
 def display_static_pages():
