@@ -1,20 +1,20 @@
 # Custom CSS for mobile devices
 st.markdown("""
-<style>
-/* Default styling for technical analysis description */
-.tech-analysis-description {
-  margin: 0;
-  line-height: 1.6;
-  color: inherit; /* Use default text color */
-}
-
-/* Override text color on mobile devices */
-@media screen and (max-width: 768px) {
+  <style>
+  /* Default styling for technical analysis description */
   .tech-analysis-description {
-    color: black !important; /* Force black text on mobile */
+    margin: 0;
+    line-height: 1.6;
+    color: inherit; /* Use default text color */
   }
-}
-</style>
+  
+  /* Override text color on mobile devices */
+  @media screen and (max-width: 768px) {
+    .tech-analysis-description {
+      color: black !important; /* Force black text on mobile */
+    }
+  }
+  </style>
 """, unsafe_allow_html=True)
 
 # app.py - Main application file with comprehensive updates
