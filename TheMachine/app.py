@@ -251,7 +251,7 @@ def analyze_and_display_data():
                 # Then display the justification with a dark text color that works on all backgrounds
                 st.markdown(f"""
                 <div style="background-color: #f0f2f6; padding: 15px; border-radius: 8px; border-left: 5px solid #1f77b4;">
-                    <p style="margin: 0; line-height: 1.6; color: #000000;">
+                    <p style="margin: 0; line-height: 1.6; color: black">
                         {technical_result.get("justification", "No technical analysis provided.")}
                     </p>
                 </div>
