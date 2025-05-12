@@ -1,3 +1,22 @@
+# Custom CSS for mobile devices
+st.markdown("""
+<style>
+/* Default styling for technical analysis description */
+.tech-analysis-description {
+  margin: 0;
+  line-height: 1.6;
+  color: inherit; /* Use default text color */
+}
+
+/* Override text color on mobile devices */
+@media screen and (max-width: 768px) {
+  .tech-analysis-description {
+    color: black !important; /* Force black text on mobile */
+  }
+}
+</style>
+""", unsafe_allow_html=True)
+
 # app.py - Main application file with comprehensive updates
 
 import streamlit as st
@@ -219,12 +238,12 @@ def analyze_and_display_data():
                 st.subheader(f"Analysis for {ticker}")
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # Technical Analysis section (with score at the top, similar to other sections)
+                # Then, modify your technical analysis section like this:
                 st.markdown("### 📊 Technical Analysis")
-
+                
                 # Extract technical prediction and add to overall results
                 technical_prediction = technical_result.get("action", "N/A")
-
+                
                 # Determine action color based on the recommendation
                 action_color = {
                     "Strong Buy": "lightgreen",
@@ -237,8 +256,8 @@ def analyze_and_display_data():
                     "Error": "gray",
                     "N/A": "gray"
                 }.get(technical_prediction, "gray")
-
-                # Display overall technical score first (similar to sentiment and fundamental)
+                
+                # Display overall technical score first
                 st.markdown(f"""
                 <div style="padding: 10px; background-color: {action_color}; 
                             border-radius: 5px; text-align: center; margin-bottom: 15px;">
@@ -247,11 +266,11 @@ def analyze_and_display_data():
                     </h3>
                 </div>
                 """, unsafe_allow_html=True)
-
-                # Then display the justification
+                
+                # Then display the justification with the class that has mobile-specific styling
                 st.markdown(f"""
                 <div style="background-color: #f0f2f6; padding: 15px; border-radius: 8px; border-left: 5px solid #1f77b4;">
-                    <p style="margin: 0; line-height: 1.6;">
+                    <p class="tech-analysis-description">
                         {technical_result.get("justification", "No technical analysis provided.")}
                     </p>
                 </div>
