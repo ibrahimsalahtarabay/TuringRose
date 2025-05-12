@@ -478,7 +478,7 @@ with st.sidebar.form("config_form"):
     
     # Time Range input
     st.markdown("---")
-    
+    """
     if investing_type == "Value investing":
         # Enable time range for 1-10 years
         time_range_years = st.slider("Time Range (Years):", 1, 10, 1)
@@ -493,7 +493,8 @@ with st.sidebar.form("config_form"):
     else:  # Balanced Approach
         # Time range dimmed, start date enabled
         st.markdown("*Time Range (Fixed for Balanced Approach)*")
-        start_date = st.date_input("Start Date:", value=datetime.today() - timedelta(days=365))
+    """    
+    start_date = st.date_input("Start Date:", value=datetime.today() - timedelta(days=365))
         
     # End date is always today (not shown to user)
     end_date = datetime.today()
