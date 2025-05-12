@@ -438,14 +438,7 @@ def analyze_and_display_data():
     # After analyzing all tickers and before displaying export options:
     # Store overall results in session state for export
     st.session_state["overall_results"] = overall_results
-    
-    # Pre-process export data once to avoid API calls when exporting 
-    # Add this line after setting overall_results
-    if "export_df" not in st.session_state:
-        from ui_components import create_export_data
-        create_export_data()
-    
-    # Then display export options using the pre-processed data
+
     display_export_options(st.session_state.get("stock_data", {}), overall_results)
 
 # Add a function for rendering static pages
