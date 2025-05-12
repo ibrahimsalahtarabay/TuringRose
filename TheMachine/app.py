@@ -452,7 +452,7 @@ from config import setup_page, setup_sidebar, ANALYSIS_WEIGHTS
 # Display title in the page
 col1, col2 = st.columns([4, 2])  # Wider second column
 with col1:
-    st.image("assets/logo1.png", width=250)
+    st.image("https://www.dropbox.com/scl/fi/gyrrtp6p7pejrpqstcelc/logo1.png", width=250)
     #st.write("")  # Empty space placeholder
     st.header("**Superior Machine: Go Farther, Faster, With Unmatched Precision.**")
 #with col2:
