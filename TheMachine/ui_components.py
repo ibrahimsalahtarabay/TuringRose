@@ -332,8 +332,16 @@ def create_comprehensive_export_data(stock_data, start_date, end_date):
     
     return pd.DataFrame(export_data)
 
+# ui_components.py - Modified display_export_options function
+
 def display_export_options(stock_data, overall_results):
-    """Display export options in the sidebar - FIXED version to prevent reloading"""
+    """Display export options in the sidebar without triggering API requests"""
+    import streamlit as st
+    import pandas as pd
+    import io
+    from datetime import datetime
+    
+    # Don't even attempt to show export options if no data is available
     if not stock_data or len(overall_results) == 0:
         st.sidebar.info("Load stock data first to enable export options.")
         return
@@ -341,78 +349,75 @@ def display_export_options(stock_data, overall_results):
     st.sidebar.markdown("---")
     st.sidebar.subheader("Export Options")
     
-    # Use session state to store the export format to prevent reloading
-    if "export_format" not in st.session_state:
-        st.session_state["export_format"] = "CSV"
+    # Create columns for different export formats
+    col1, col2, col3 = st.sidebar.columns(3)
     
-    # Create a callback for when the format changes
-    def on_format_change(new_format):
-        st.session_state["export_format"] = new_format
+    # Use pre-generated data for export - no calculations or API calls
+    # Get data that's already in the session state
+    start_date = st.session_state.get("start_date", "N/A")
+    end_date = st.session_state.get("end_date", "N/A")
     
-    # Create the selectbox with the on_change callback
-    export_format = st.sidebar.selectbox(
-        "Export Format", 
-        ["CSV", "Excel", "JSON"],
-        index=["CSV", "Excel", "JSON"].index(st.session_state["export_format"]),
-        key="export_format_select",
-        on_change=on_format_change,
-        args=(st.session_state.get("export_format_select"),)
-    ) 
+    # Add timestamp to filename
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename_base = f"turingrose_analysis_{timestamp}"
     
-    # Get current format from session state
-    current_format = st.session_state["export_format"]
-    
-    if st.sidebar.button("Export Detailed Results"):
-        # Get date range from session state or use default
-        start_date = st.session_state.get("start_date", "N/A")
-        end_date = st.session_state.get("end_date", "N/A")
-        
-        # Create comprehensive export data
-        df_export = create_comprehensive_export_data(stock_data, start_date, end_date)
-        
-        # Add timestamp to filename
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"turingrose_comprehensive_analysis_{timestamp}"
-        
-        # Export based on selected format
-        if current_format == "CSV":
-            csv = df_export.to_csv(index=False)
-            st.sidebar.download_button(
-                label="Download Comprehensive CSV",
-                data=csv,
-                file_name=f"{filename}.csv",
-                mime="text/csv"
-            )
-        elif current_format == "Excel":
-            # For Excel export, create multiple worksheets
-            buffer = io.BytesIO()
-            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                # Main comprehensive data
-                df_export.to_excel(writer, sheet_name='Complete_Analysis', index=False)
-                
-                # Summary worksheet with key data
-                summary_columns = ['Ticker', 'Technical_Prediction', 'Fundamental_Score', 
-                                 'Sentiment_Label', 'Combined_Prediction', 'Combined_Score']
-                summary_df = df_export[summary_columns].copy()
-                summary_df.to_excel(writer, sheet_name='Summary', index=False)
-                
-                # Financial metrics worksheet
-                financial_columns = ['Ticker', 'PE_Ratio', 'PB_Ratio', 'ROE', 'Current_Ratio', 
-                                   'Debt_to_Equity', 'Market_Cap', 'Latest_Close_Price']
-                financial_df = df_export[financial_columns].copy()
-                financial_df.to_excel(writer, sheet_name='Financial_Metrics', index=False)
+    # Export data in different formats with specific buttons for each
+    # CSV Export
+    with col1:
+        # Create the DataFrame once
+        if "export_df" not in st.session_state:
+            # Create a simple export DataFrame without API calls
+            export_data = []
+            for result in overall_results:
+                ticker = result["Stock"]
+                prediction = result["Prediction"]
+                # Add basic info from existing session state
+                combined_info = st.session_state.get("combined_results", {}).get(ticker, {})
+                row = {
+                    "Ticker": ticker,
+                    "Analysis_Date": datetime.now().strftime('%Y-%m-%d'),
+                    "Technical_Signal": st.session_state.get("analysis_results", {}).get(ticker, {}).get("action", "N/A"),
+                    "Combined_Prediction": prediction,
+                    "Combined_Score": combined_info.get("score", 0),
+                    "Strategy": combined_info.get("investing_type", "N/A")
+                }
+                export_data.append(row)
             
-            st.sidebar.download_button(
-                label="Download Comprehensive Excel",
-                data=buffer.getvalue(),
-                file_name=f"{filename}.xlsx",
-                mime="application/vnd.ms-excel"
-            )
-        elif current_format == "JSON":
-            json_data = df_export.to_json(orient="records", indent=2)
-            st.sidebar.download_button(
-                label="Download Comprehensive JSON",
-                data=json_data,
-                file_name=f"{filename}.json",
-                mime="application/json"
-            )
+            st.session_state["export_df"] = pd.DataFrame(export_data)
+        
+        # Use the cached DataFrame
+        csv_data = st.session_state["export_df"].to_csv(index=False)
+        st.download_button(
+            label="CSV",
+            data=csv_data,
+            file_name=f"{filename_base}.csv",
+            mime="text/csv",
+            key="csv_download"
+        )
+    
+    # Excel Export
+    with col2:
+        # Use the same cached DataFrame
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+            st.session_state["export_df"].to_excel(writer, sheet_name='Analysis', index=False)
+        
+        st.download_button(
+            label="Excel",
+            data=buffer.getvalue(),
+            file_name=f"{filename_base}.xlsx",
+            mime="application/vnd.ms-excel",
+            key="excel_download"
+        )
+    
+    # JSON Export
+    with col3:
+        # Use the same cached DataFrame
+        json_data = st.session_state["export_df"].to_json(orient="records")
+        st.download_button(
+            label="JSON",
+            data=json_data,
+            file_name=f"{filename_base}.json",
+            mime="application/json",
+            key="json_download"
+        )
