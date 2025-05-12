@@ -2,10 +2,10 @@
 
 import streamlit as st
 import plotly.graph_objects as go
-import tempfile
-import os
 import json
 from config import gen_model
+import base64
+from io import BytesIO
 
 def analyze_ticker(ticker, data, indicators):
     """
@@ -62,37 +62,48 @@ def analyze_ticker(ticker, data, indicators):
         height=600
     )
 
-    # Save chart as temporary PNG file and read image bytes
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-        fig.write_image(tmpfile.name)
-        tmpfile_path = tmpfile.name
-        
-    with open(tmpfile_path, "rb") as f:
-        image_bytes = f.read()
-        
-    os.remove(tmpfile_path)
-
-    # Create an image Part
-    image_part = {
-        "data": image_bytes,  
-        "mime_type": "image/png"
-    }
-
-    # Updated prompt asking for a detailed justification of technical analysis and a recommendation.
-    analysis_prompt = (
-        f"You are a Stock Trader specializing in Technical Analysis at a top financial institution. "
-        f"Analyze the stock chart for {ticker} based on its candlestick chart and the displayed technical indicators. "
-        f"Provide a detailed justification of your analysis, explaining what patterns, signals, and trends you observe. "
-        f"Then, based solely on the chart, provide a recommendation from the following options: "
-        f"'Strong Buy', 'Buy', 'Weak Buy', 'Hold', 'Weak Sell', 'Sell', or 'Strong Sell'. "
-        f"Return your output as a JSON object with two keys: 'action' and 'justification'."
-    )
-
-    # Call the Gemini API with text and image input
+    # For cloud deployment, use a descriptive analysis instead of image processing
+    # Create a text description of the chart for AI analysis
+    last_close = data['Close'].iloc[-1]
+    first_close = data['Close'].iloc[0]
+    percent_change = ((last_close - first_close) / first_close) * 100
+    direction = "upward" if percent_change > 0 else "downward"
+    
+    # Sample technical indicators for analysis
+    if len(data) >= 20:
+        sma_20 = data['Close'].rolling(window=20).mean().iloc[-1]
+        above_sma = last_close > sma_20
+        sma_status = "above" if above_sma else "below"
+    else:
+        sma_status = "unknown (insufficient data)"
+    
+    # Create chart description for AI
+    chart_description = f"""
+    Technical analysis for {ticker}:
+    - Price trend: {direction} movement of {abs(percent_change):.2f}% over the period
+    - Current price (${last_close:.2f}) is {sma_status} the 20-day SMA
+    - Starting price: ${first_close:.2f}, Ending price: ${last_close:.2f}
+    - Highest price in period: ${data['High'].max():.2f}
+    - Lowest price in period: ${data['Low'].min():.2f}
+    - Volume trend: {'increasing' if data['Volume'].iloc[-1] > data['Volume'].iloc[0] else 'decreasing'}
+    - Selected indicators: {', '.join(indicators)}
+    """
+    
+    # Call the Gemini API with text input instead of image
     try:
         contents = [
-            {"role": "user", "parts": [analysis_prompt]},
-            {"role": "user", "parts": [image_part]}
+            {"role": "user", "parts": [f"""
+                You are a Stock Trader specializing in Technical Analysis at a top financial institution. 
+                Analyze the stock data for {ticker} based on the following information:
+                
+                {chart_description}
+                
+                Provide a detailed justification of your analysis, explaining what patterns, signals, and trends you observe.
+                Then, based solely on this technical data, provide a recommendation from the following options:
+                'Strong Buy', 'Buy', 'Weak Buy', 'Hold', 'Weak Sell', 'Sell', or 'Strong Sell'.
+                
+                Return your output as a JSON object with two keys: 'action' and 'justification'.
+            """]}
         ]
 
         response = gen_model.generate_content(
