@@ -334,108 +334,54 @@ def create_comprehensive_export_data(stock_data, start_date, end_date):
 
 # ui_components.py - Modified display_export_options function
 
-def create_export_data():
-    """Pre-process export data ONCE and store it in session state"""
-    import streamlit as st
-    import pandas as pd
-    from datetime import datetime
-    
-    # Skip if we've already created the export data
-    if "export_df" in st.session_state:
-        return
-        
-    # Get existing data from session state
-    overall_results = st.session_state.get("overall_results", [])
-    if not overall_results:
-        return
-        
-    # Create a simple export DataFrame without API calls
-    export_data = []
-    for result in overall_results:
-        ticker = result["Stock"]
-        prediction = result["Prediction"]
-        # Add basic info from existing session state
-        combined_info = st.session_state.get("combined_results", {}).get(ticker, {})
-        tech_info = st.session_state.get("analysis_results", {}).get(ticker, {})
-        fund_info = st.session_state.get(f"fundamental_results_{ticker}", {})
-        sent_info = st.session_state.get(f"sentiment_results_{ticker}", {})
-        
-        row = {
-            "Ticker": ticker,
-            "Analysis_Date": datetime.now().strftime('%Y-%m-%d'),
-            "Technical_Signal": tech_info.get("action", "N/A"),
-            "Fundamental_Score": fund_info.get("score", "N/A"),
-            "Sentiment_Label": sent_info.get("sentiment", "N/A"),
-            "Combined_Prediction": prediction,
-            "Combined_Score": combined_info.get("score", 0),
-            "Strategy": combined_info.get("investing_type", "N/A")
-        }
-        export_data.append(row)
-    
-    # Store in session state to avoid recalculation
-    st.session_state["export_df"] = pd.DataFrame(export_data)
-
-
 def display_export_options(stock_data, overall_results):
-    """Display export options in the sidebar without triggering API requests"""
+    """
+    Extremely simplified export with no processing and no API calls
+    """
     import streamlit as st
     import pandas as pd
-    import io
+    import json
     from datetime import datetime
     
-    # Don't even attempt to show export options if no data is available
+    # Only show export if we have data
     if not stock_data or len(overall_results) == 0:
-        st.sidebar.info("Load stock data first to enable export options.")
-        return
-    
-    # Create the export data ONCE and store in session state
-    create_export_data()
-    
-    # Bail out if we couldn't create the export data
-    if "export_df" not in st.session_state:
-        st.sidebar.warning("Unable to prepare export data.")
         return
     
     st.sidebar.markdown("---")
-    st.sidebar.subheader("Export Options")
+    st.sidebar.subheader("Export Results")
     
-    # Add timestamp to filename
+    # Create a simple data export with only what we already have
+    export_data = []
+    
+    # Use ONLY data that's already in the session state
+    for result in overall_results:
+        ticker = result["Stock"]
+        export_data.append({
+            "Ticker": ticker,
+            "Prediction": result["Prediction"],
+        })
+    
+    # Convert to DataFrame once
+    export_df = pd.DataFrame(export_data)
+    
+    # Create file name with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename_base = f"turingrose_analysis_{timestamp}"
+    filename = f"stock_analysis_{timestamp}"
     
-    # Use a container to prevent full page reloads
-    download_container = st.sidebar.container()
-    
-    # CSV Export button
-    csv_data = st.session_state["export_df"].to_csv(index=False).encode('utf-8')
-    download_container.download_button(
-        label="📄 Export as CSV",
-        data=csv_data,
-        file_name=f"{filename_base}.csv",
+    # Simple CSV export
+    csv = export_df.to_csv(index=False)
+    st.sidebar.download_button(
+        label="Download CSV",
+        data=csv,
+        file_name=f"{filename}.csv",
         mime="text/csv",
-        key="csv_download"
     )
     
-    # Excel Export button
-    buffer = io.BytesIO()
-    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        st.session_state["export_df"].to_excel(writer, sheet_name='Analysis', index=False)
-    buffer.seek(0)
-    
-    download_container.download_button(
-        label="📊 Export as Excel",
-        data=buffer.getvalue(),
-        file_name=f"{filename_base}.xlsx",
-        mime="application/vnd.ms-excel",
-        key="excel_download"
-    )
-    
-    # JSON Export button
-    json_data = st.session_state["export_df"].to_json(orient="records")
-    download_container.download_button(
-        label="🔍 Export as JSON",
-        data=json_data,
-        file_name=f"{filename_base}.json",
+    # Simple JSON export
+    json_str = json.dumps(export_data, indent=2)
+    st.sidebar.download_button(
+        label="Download JSON",
+        data=json_str,
+        file_name=f"{filename}.json",
         mime="application/json",
-        key="json_download"
     )
