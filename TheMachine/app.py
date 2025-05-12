@@ -1,22 +1,3 @@
-# Custom CSS for mobile devices
-st.markdown("""
-  <style>
-  /* Default styling for technical analysis description */
-  .tech-analysis-description {
-    margin: 0;
-    line-height: 1.6;
-    color: inherit; /* Use default text color */
-  }
-  
-  /* Override text color on mobile devices */
-  @media screen and (max-width: 768px) {
-    .tech-analysis-description {
-      color: black !important; /* Force black text on mobile */
-    }
-  }
-  </style>
-""", unsafe_allow_html=True)
-
 # app.py - Main application file with comprehensive updates
 
 import streamlit as st
@@ -238,7 +219,7 @@ def analyze_and_display_data():
                 st.subheader(f"Analysis for {ticker}")
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # Then, modify your technical analysis section like this:
+               # Technical Analysis section with solid black text
                 st.markdown("### 📊 Technical Analysis")
                 
                 # Extract technical prediction and add to overall results
@@ -267,10 +248,10 @@ def analyze_and_display_data():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Then display the justification with the class that has mobile-specific styling
+                # Then display the justification with a dark text color that works on all backgrounds
                 st.markdown(f"""
                 <div style="background-color: #f0f2f6; padding: 15px; border-radius: 8px; border-left: 5px solid #1f77b4;">
-                    <p class="tech-analysis-description">
+                    <p style="margin: 0; line-height: 1.6; color: #000000;">
                         {technical_result.get("justification", "No technical analysis provided.")}
                     </p>
                 </div>
