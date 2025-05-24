@@ -356,7 +356,7 @@ with st.sidebar.form("config_form"):
     current_weights = ANALYSIS_WEIGHTS[investing_type]
     
     # Submit button
-    submitted = st.form_submit_button("🚀 Run TheMachine")
+    submitted = st.form_submit_button("Run TheMachine")
 
 # Process form submission
 if submitted:
