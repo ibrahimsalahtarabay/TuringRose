@@ -401,9 +401,9 @@ def generate_weighted_explanation(investing_type, scores, metrics, is_real_data)
         explanation += "Reasonable valuation supports swing trades" if scores.get('valuation', 50) > 60 else "High valuation increases risk"
     
     else:  # Balanced Approach
-        explanation += f"**Overall Balance** - Valuation: {scores.get('valuation', 50):.0f}, "
-        explanation += f"Profitability: {scores.get('profitability', 50):.0f}, "
-        explanation += f"Health: {scores.get('health', 50):.0f}, "
+        explanation += f"**Overall Balance** - Valuation: {scores.get('valuation', 50):.0f}/100, "
+        explanation += f"Profitability: {scores.get('profitability', 50):.0f}/100, "
+        explanation += f"Health: {scores.get('health', 50):.0f}/100, "
         explanation += f"Growth: {scores.get('growth', 50):.0f}/100. "
         
         avg_score = sum(scores.values()) / len(scores)
