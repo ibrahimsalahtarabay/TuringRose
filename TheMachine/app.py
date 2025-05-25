@@ -567,11 +567,7 @@ with st.sidebar.form("config_form"):
     current_weights = ANALYSIS_WEIGHTS[investing_type] if investing_type in ANALYSIS_WEIGHTS else ANALYSIS_WEIGHTS["Balanced Approach"]
     
     # Submit button
-<<<<<<< HEAD
     submitted = st.form_submit_button("Run TheMachine", use_container_width=True)
-=======
-    submitted = st.form_submit_button("Run TheMachine")
->>>>>>> 44597a84731c6ccf477ccdc7e735fa5cca72d011
 
 # OUTSIDE THE FORM - Display selected indicators info
 if indicators:
