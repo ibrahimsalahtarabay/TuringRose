@@ -200,15 +200,11 @@ def analyze_and_display_data():
                     metrics_col1, metrics_col2, metrics_col3 = st.columns(3)
                     metrics_col1.metric("Latest Close", f"${latest_close:.2f}")
                     
-                    if daily_change is not None:
-                        # Force correct color: inverse logic for Streamlit
-                        delta_color = "inverse" if daily_change >= 0 else "normal"
-                        
+                    if daily_change is not None:                      
                         metrics_col2.metric(
                             "Daily Change", 
                             f"{daily_change:.2f}%", 
-                            delta=f"{daily_change:.2f}%", 
-                            delta_color=delta_color
+                            delta=f"{daily_change:.2f}%"
                         )
                     else:
                         metrics_col2.metric("Daily Change", "N/A")
