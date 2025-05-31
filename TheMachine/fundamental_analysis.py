@@ -365,54 +365,54 @@ def generate_weighted_explanation(investing_type, scores, metrics, is_real_data)
         explanation += f"**Valuation Focus** (Score: {scores.get('valuation', 50):.0f}/100): "
         if metrics['PE_Ratio'] > 0:
             explanation += f"P/E ratio of {metrics['PE_Ratio']:.1f} "
-            explanation += "suggests good value" if metrics['PE_Ratio'] < 20 else "indicates premium pricing"
+            explanation += "suggests good value " if metrics['PE_Ratio'] < 20 else "indicates premium pricing "
         
-        explanation += f"\n**Financial Strength** (Score: {scores.get('health', 50):.0f}/100): "
+        explanation += f"\n\n**Financail Strength** (Score: {scores.get('health', 50):.0f}/100): "
         if metrics['Current_Ratio'] > 0:
             explanation += f"Current ratio of {metrics['Current_Ratio']:.2f} "
-            explanation += "shows strong liquidity" if metrics['Current_Ratio'] > 1.5 else "indicates tight liquidity"
+            explanation += "shows strong liquidity " if metrics['Current_Ratio'] > 1.5 else "indicates tight liquidity "
         
-        explanation += f"\n**Income Generation** (Score: {scores.get('income', 50):.0f}/100): "
+        explanation += f"\n\n**Income Generation** (Score: {scores.get('income', 50):.0f}/100): "
         explanation += f"Dividend yield of {metrics['Dividend_Yield']:.2f}% "
         explanation += "provides attractive income" if metrics['Dividend_Yield'] > 2 else "offers limited income"
     
     elif investing_type == 'Growth Investing':
         explanation += f"**Growth Potential** (Score: {scores.get('growth', 50):.0f}/100): "
-        explanation += "Strong growth metrics indicate expansion potential" if scores.get('growth', 50) > 70 else "Growth metrics suggest moderate expansion"
+        explanation += "Strong growth metrics indicate expansion potential " if scores.get('growth', 50) > 70 else "Growth metrics suggest moderate expansion "
         
-        explanation += f"\n**Profitability** (Score: {scores.get('profitability', 50):.0f}/100): "
+        explanation += f"\n\n**Profitability** (Score: {scores.get('profitability', 50):.0f}/100): "
         if metrics['ROE'] > 0:
             explanation += f"ROE of {metrics['ROE']:.1f}% "
-            explanation += "demonstrates excellent management efficiency" if metrics['ROE'] > 20 else "shows adequate profitability"
+            explanation += "demonstrates excellent management efficiency " if metrics['ROE'] > 20 else "shows adequate profitability "
         
-        explanation += f"\n**Financial Flexibility** (Score: {scores.get('health', 50):.0f}/100): "
+        explanation += f"\n\n**Financial Flexibility** (Score: {scores.get('health', 50):.0f}/100): "
         if metrics['Debt_to_Equity'] >= 0:
             explanation += f"Debt-to-equity of {metrics['Debt_to_Equity']:.2f} "
-            explanation += "provides financial flexibility for growth" if metrics['Debt_to_Equity'] < 0.5 else "may limit growth investments"
+            explanation += "provides financial flexibility for growth " if metrics['Debt_to_Equity'] < 0.5 else "may limit growth investments "
     
     elif investing_type == 'Swing Trading':
         explanation += f"**Financial Stability** (Score: {scores.get('health', 50):.0f}/100): "
-        explanation += "Strong balance sheet reduces downside risk" if scores.get('health', 50) > 70 else "Balance sheet requires monitoring"
+        explanation += "Strong balance sheet reduces downside risk " if scores.get('health', 50) > 70 else "Balance sheet requires monitoring "
         
-        explanation += f"\n**Profitability** (Score: {scores.get('profitability', 50):.0f}/100): "
-        explanation += "Solid earnings support price momentum" if scores.get('profitability', 50) > 60 else "Earnings may limit upside potential"
+        explanation += f"\n\n**Profitability** (Score: {scores.get('profitability', 50):.0f}/100): "
+        explanation += "Solid earnings support price momentum " if scores.get('profitability', 50) > 60 else "Earnings may limit upside potential "
         
-        explanation += f"\n**Valuation** (Score: {scores.get('valuation', 50):.0f}/100): "
-        explanation += "Reasonable valuation supports swing trades" if scores.get('valuation', 50) > 60 else "High valuation increases risk"
+        explanation += f"\n\n**Valuation** (Score: {scores.get('valuation', 50):.0f}/100): "
+        explanation += "Reasonable valuation supports swing trades " if scores.get('valuation', 50) > 60 else "High valuation increases risk "
     
     else:  # Balanced Approach
         explanation += f"**Overall Balance** - Valuation: {scores.get('valuation', 50):.0f}/100. "
-        explanation += f"Profitability: {scores.get('profitability', 50):.0f}/100. "
-        explanation += f"Health: {scores.get('health', 50):.0f}/100. "
-        explanation += f"Growth: {scores.get('growth', 50):.0f}/100. "
+        explanation += f"\n\nProfitability: {scores.get('profitability', 50):.0f}/100. "
+        explanation += f"\n\nHealth: {scores.get('health', 50):.0f}/100. "
+        explanation += f"\n\nGrowth: {scores.get('growth', 50):.0f}/100. "
         
         avg_score = sum(scores.values()) / len(scores)
         if avg_score > 70:
-            explanation += "Well-rounded investment opportunity with strong fundamentals across multiple areas."
+            explanation += " Well-rounded investment opportunity with strong fundamentals across multiple areas. "
         elif avg_score > 50:
-            explanation += "Decent investment with some strengths but areas for improvement."
+            explanation += " Decent investment with some strengths but areas for improvement. "
         else:
-            explanation += "Faces challenges in multiple fundamental areas requiring careful consideration."
+            explanation += " Faces challenges in multiple fundamental areas requiring careful consideration. "
     
     return explanation
 
