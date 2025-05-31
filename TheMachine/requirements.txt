@@ -1,15 +1,10 @@
-streamlit>=1.24.0
-pandas>=2.0.0
-numpy>=1.24.0
-plotly>=5.0.0
-google-generativeai
-alpha_vantage
-# PyTorch installation (CPU-only version for better compatibility)
-torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
-# Transformers requires either PyTorch or TensorFlow
-transformers>=4.30.0
+streamlit
+pandas
+numpy
+plotly
+yfinance
 requests
+alpha-vantage
+google-generativeai
+transformers
 feedparser
-xlsxwriter
