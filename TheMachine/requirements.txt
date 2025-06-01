@@ -8,3 +8,4 @@ alpha-vantage
 google-generativeai
 transformers
 feedparser
+tensorflow
