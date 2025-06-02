@@ -533,7 +533,7 @@ if "page_initialized" not in st.session_state:
 col1, col2 = st.columns([4, 2])
 with col1:
     st.image("TheMachine/assets/logo1.png", width=250)
-    st.header("**Superior Machine: Go Farther, Faster, With Unmatched Precision.**")
+    st.header("**The Soul Beyond Data**")
 
 # Sidebar configuration
 st.sidebar.header("TheMachine Setup")
