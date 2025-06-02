@@ -474,22 +474,22 @@ def analyze_and_display_data():
                     - **Market Risk Analysis**: {environment} - {risk_score}/100 (Weight: {weights['market_risk']}%)
                     """)
                 
-                with col_breakdown2:
-                    st.markdown("**Risk-Adjusted Strategy Context:**")
-                    if risk_score > 70:
-                        st.markdown("🔴 **High Risk Environment**: Consider reducing position sizes or defensive strategies")
-                    elif risk_score > 50:
-                        st.markdown("🟡 **Moderate Risk Environment**: Standard position sizing with increased monitoring")
-                    else:
-                        st.markdown("🟢 **Low Risk Environment**: Favorable conditions for increased allocation")
+              #  with col_breakdown2:
+               #     st.markdown("**Risk-Adjusted Strategy Context:**")
+                #    if risk_score > 70:
+                 #       st.markdown("🔴 **High Risk Environment**: Consider reducing position sizes or defensive strategies")
+                  #  elif risk_score > 50:
+                   #     st.markdown("🟡 **Moderate Risk Environment**: Standard position sizing with increased monitoring")
+                    #else:
+                     #   st.markdown("🟢 **Low Risk Environment**: Favorable conditions for increased allocation")
                     
-                    strategy_risk_context = {
-                        "Swing Trading": f"VIX at {market_data['vix_current']:.1f} - {'High volatility creates opportunities' if market_data['vix_current'] > 25 else 'Low volatility may limit profits'}",
-                        "Value Investing": f"Economic growth at {economic_data['gdp_growth']:.1f}% - {'Recession fears may create value opportunities' if economic_data['gdp_growth'] < 2 else 'Strong economy supports value recovery'}",
-                        "Growth Investing": f"Interest rates at {market_data['treasury_10y']:.1f}% - {'High rates pressure growth valuations' if market_data['treasury_10y'] > 4.5 else 'Low rates support growth premiums'}",
-                        "Balanced Approach": f"Market risk score {risk_score}/100 suggests {'defensive positioning' if risk_score > 60 else 'normal allocation' if risk_score > 40 else 'opportunistic positioning'}"
-                    }
-                    st.markdown(f"*{strategy_risk_context.get(investing_type, 'Monitor all risk factors for optimal strategy execution')}*")
+                    #strategy_risk_context = {
+                     #   "Swing Trading": f"VIX at {market_data['vix_current']:.1f} - {'High volatility creates opportunities' if market_data['vix_current'] > 25 else 'Low volatility may limit profits'}",
+                      #  "Value Investing": f"Economic growth at {economic_data['gdp_growth']:.1f}% - {'Recession fears may create value opportunities' if economic_data['gdp_growth'] < 2 else 'Strong economy supports value recovery'}",
+                       # "Growth Investing": f"Interest rates at {market_data['treasury_10y']:.1f}% - {'High rates pressure growth valuations' if market_data['treasury_10y'] > 4.5 else 'Low rates support growth premiums'}",
+                        #"Balanced Approach": f"Market risk score {risk_score}/100 suggests {'defensive positioning' if risk_score > 60 else 'normal allocation' if risk_score > 40 else 'opportunistic positioning'}"
+                   # }
+                   # st.markdown(f"*{strategy_risk_context.get(investing_type, 'Monitor all risk factors for optimal strategy execution')}*")
                 
                 # 4-Pillar Strategy-Specific Insights
                 st.markdown("**4-Pillar Strategy Insights:**")
