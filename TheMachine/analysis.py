@@ -1,9 +1,9 @@
-# analysis.py - Fixed Technical analysis with Claude API instead of Gemini
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 import json
 from config import claude_client, MODEL_NAME
+import re
 
 def calculate_rsi(prices, window=14):
     """Calculate RSI indicator"""
@@ -27,7 +27,7 @@ def calculate_stochastic(high, low, close, k_window=14, d_window=3):
     """Calculate Stochastic Oscillator"""
     lowest_low = low.rolling(window=k_window).min()
     highest_high = high.rolling(window=k_window).max()
-    k_percent = 100 * ((close - lowest_low) / (highest_high - lowest_low))
+    k_percent = 100 * ((close - lowest_low) / (highest_high - lowest_high))
     d_percent = k_percent.rolling(window=d_window).mean()
     return k_percent, d_percent
 
@@ -318,6 +318,9 @@ def analyze_ticker(ticker, data, indicators, indicator_params=None):
     SELECTED INDICATORS: {', '.join(indicators)}
     """
     
+    # Initialize result before the try block
+    result = None
+
     # AI Analysis with comprehensive data using Claude API
     try:
         message = claude_client.messages.create(
@@ -366,7 +369,6 @@ The justification should reference specific indicator values and explain your re
             # Clean the JSON string to remove control characters
             json_string = json_string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
             # Remove multiple spaces
-            import re
             json_string = re.sub(r'\s+', ' ', json_string)
             
             try:
@@ -383,7 +385,13 @@ The justification should reference specific indicator values and explain your re
 
     except Exception as e:
         print(f"Analysis error details: {e}")
-
+        # Ultimate fallback - simple analysis based on available indicators
+        result = get_fallback_analysis(chart_description)
+        # Clean the justification to avoid control characters
+        if "justification" in result:
+            result["justification"] = result["justification"].replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+            result["justification"] += " Note: Using fallback analysis due to API limitations."
+    
     return fig, result
 
 # Additional function to get trading signals summary
@@ -440,3 +448,30 @@ def get_trading_signals_summary(indicator_values, current_price):
                 signal_details.append("BB Middle Zone (Neutral)")
     
     return signals, signal_details
+
+def get_fallback_analysis(chart_description):
+    """Provide a basic analysis when the main API call fails."""
+    # This is a very simple, rule-based fallback.
+    if "RSI" in chart_description and "oversold territory" in chart_description:
+        action = "Weak Buy"
+        justification = "RSI is in the oversold territory, indicating a potential reversal."
+    elif "RSI" in chart_description and "overbought territory" in chart_description:
+        action = "Weak Sell"
+        justification = "RSI is in the overbought territory, suggesting a potential pullback."
+    elif "MACD" in chart_description and "bullish" in chart_description:
+        action = "Weak Buy"
+        justification = "MACD shows a bullish signal."
+    elif "MACD" in chart_description and "bearish" in chart_description:
+        action = "Weak Sell"
+        justification = "MACD shows a bearish signal."
+    elif "Price is above SMA" in chart_description:
+        action = "Weak Buy"
+        justification = "Price is trading above its moving average, a bullish sign."
+    elif "Price is below SMA" in chart_description:
+        action = "Weak Sell"
+        justification = "Price is trading below its moving average, a bearish sign."
+    else:
+        action = "Hold"
+        justification = "No strong signals detected from the available indicators."
+
+    return {"action": action, "justification": justification}
