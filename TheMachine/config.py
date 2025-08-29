@@ -1,22 +1,21 @@
-# config.py - Enhanced configuration with intelligent weights
+# config.py - Enhanced configuration with Claude API instead of Gemini
 import streamlit as st
-import google.generativeai as genai
+import anthropic
 
 # API Keys
-GOOGLE_API_KEY = "AIzaSyD2mJ94OSl1zZeAgOmvveYu5CAToo9X_Ag"
+CLAUDE_API_KEY = "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"  # Replace with your actual Claude API key
 ALPHA_VANTAGE_API_KEY = "NLKISJ9TBY2KCC6D"
-MODEL_NAME = 'gemini-2.0-flash'
 
-# Configure the Gemini API
-genai.configure(api_key=GOOGLE_API_KEY)
-gen_model = genai.GenerativeModel(MODEL_NAME)
+# Configure the Claude API
+claude_client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
+MODEL_NAME = 'claude-3-5-sonnet-20241022'  # or claude-3-opus-20240229 for more powerful analysis
 
-# Analysis weights for different strategies (Technical + Fundamental + Sentiment + Market Risk)
+# Analysis weights for different strategies (Technical + Fundamental + Sentiment)
 ANALYSIS_WEIGHTS = {
-    'Swing Trading': {'technical': 45, 'fundamental': 20, 'sentiment': 15, 'market_risk': 20},
-    'Value Investing': {'technical': 15, 'fundamental': 45, 'sentiment': 10, 'market_risk': 30},
-    'Growth Investing': {'technical': 25, 'fundamental': 30, 'sentiment': 15, 'market_risk': 30},
-    'Balanced Approach': {'technical': 30, 'fundamental': 35, 'sentiment': 15, 'market_risk': 20}
+    'Swing Trading': {'technical': 60, 'fundamental': 25, 'sentiment': 15},
+    'Value Investing': {'technical': 20, 'fundamental': 65, 'sentiment': 15},
+    'Growth Investing': {'technical': 30, 'fundamental': 55, 'sentiment': 15},
+    'Balanced Approach': {'technical': 35, 'fundamental': 45, 'sentiment': 20}
 }
 
 # Technical indicator weights by strategy (0-1 scale, only for SELECTED indicators)

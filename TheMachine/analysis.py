@@ -1,9 +1,9 @@
-# analysis.py - Fixed Technical analysis without streamlit dependencies
+# analysis.py - Fixed Technical analysis with Claude API instead of Gemini
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 import json
-from config import gen_model
+from config import claude_client, MODEL_NAME
 
 def calculate_rsi(prices, window=14):
     """Calculate RSI indicator"""
@@ -41,7 +41,7 @@ def calculate_atr(high, low, close, window=14):
     return atr
 
 def analyze_ticker(ticker, data, indicators, indicator_params=None):
-    """Enhanced analyze function with comprehensive technical indicators"""
+    """Enhanced analyze function with comprehensive technical indicators using Claude API"""
     
     # Default parameters if none provided
     if indicator_params is None:
@@ -318,31 +318,39 @@ def analyze_ticker(ticker, data, indicators, indicator_params=None):
     SELECTED INDICATORS: {', '.join(indicators)}
     """
     
-    # AI Analysis with comprehensive data
+    # AI Analysis with comprehensive data using Claude API
     try:
-        contents = [{"role": "user", "parts": [f"""
-            You are an Expert Technical Analyst at a premier trading firm. Analyze this stock data comprehensively:
+        message = claude_client.messages.create(
+            model=MODEL_NAME,
+            max_tokens=1000,
+            temperature=0.1,
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""You are an Expert Technical Analyst at a premier trading firm. Analyze this stock data comprehensively:
             
-            {chart_description}
-            
-            ANALYSIS REQUIREMENTS:
-            1. Evaluate ALL provided technical indicators and their signals
-            2. Identify any confluences (multiple indicators agreeing)
-            3. Note any divergences between price and indicators
-            4. Consider the overall market structure (support/resistance, trend)
-            5. Assess momentum and volatility conditions
-            6. Provide specific entry/exit levels if applicable
-            
-            Based on this comprehensive technical analysis, provide your recommendation:
-            'Strong Buy', 'Buy', 'Weak Buy', 'Hold', 'Weak Sell', 'Sell', or 'Strong Sell'
-            
-            Return as JSON with keys: 'action' and 'justification'
-            The justification should reference specific indicator values and explain your reasoning.
-        """]}]
+{chart_description}
 
-        response = gen_model.generate_content(contents=contents)
-        result_text = response.text
+ANALYSIS REQUIREMENTS:
+1. Evaluate ALL provided technical indicators and their signals
+2. Identify any confluences (multiple indicators agreeing)
+3. Note any divergences between price and indicators
+4. Consider the overall market structure (support/resistance, trend)
+5. Assess momentum and volatility conditions
+6. Provide specific entry/exit levels if applicable
+
+Based on this comprehensive technical analysis, provide your recommendation:
+'Strong Buy', 'Buy', 'Weak Buy', 'Hold', 'Weak Sell', 'Sell', or 'Strong Sell'
+
+Return as JSON with keys: 'action' and 'justification'
+The justification should reference specific indicator values and explain your reasoning."""
+                }
+            ]
+        )
         
+        result_text = message.content[0].text
+        
+        # Extract JSON from Claude's response
         json_start_index = result_text.find('{')
         json_end_index = result_text.rfind('}') + 1
         

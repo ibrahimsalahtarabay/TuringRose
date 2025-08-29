@@ -5,7 +5,7 @@ import json
 import random
 import pandas as pd
 import numpy as np
-from config import ALPHA_VANTAGE_API_KEY, gen_model, FUNDAMENTAL_RATIO_WEIGHTS, GROWTH_METRICS_WEIGHTS
+from config import ALPHA_VANTAGE_API_KEY, FUNDAMENTAL_RATIO_WEIGHTS, GROWTH_METRICS_WEIGHTS
 
 def get_financial_statements(ticker):
     """Get detailed financial statements from Alpha Vantage"""
