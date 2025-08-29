@@ -1,13 +1,31 @@
 # config.py - Enhanced configuration with Claude API instead of Gemini
 import streamlit as st
 import anthropic
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# API Keys from environment variables
+CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
+
+# Validate API keys
+if not CLAUDE_API_KEY:
+    st.error("❌ CLAUDE_API_KEY not found. Please check your .env file.")
+    st.stop()
+
+# Configure the Claude API
+try:
+    claude_client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
+except Exception as e:
+    st.error(f"❌ Failed to initialize Claude API: {e}")
+    st.stop()
 
 # API Keys
-CLAUDE_API_KEY = "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"  # Replace with your actual Claude API key
 ALPHA_VANTAGE_API_KEY = "NLKISJ9TBY2KCC6D"
 
 # Configure the Claude API
-claude_client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
 MODEL_NAME = 'claude-3-5-sonnet-20241022'  # or claude-3-opus-20240229 for more powerful analysis
 
 # Analysis weights for different strategies (Technical + Fundamental + Sentiment)
