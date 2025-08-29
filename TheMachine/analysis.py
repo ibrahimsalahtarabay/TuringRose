@@ -383,12 +383,6 @@ The justification should reference specific indicator values and explain your re
 
     except Exception as e:
         print(f"Analysis error details: {e}")
-        # Ultimate fallback - simple analysis based on available indicators
-        result = get_fallback_analysis(chart_description)
-        # Clean the justification to avoid control characters
-        if "justification" in result:
-            result["justification"] = result["justification"].replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
-            result["justification"] += " Note: Using fallback analysis due to API limitations."
 
     return fig, result
 
