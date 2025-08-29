@@ -348,7 +348,13 @@ The justification should reference specific indicator values and explain your re
             ]
         )
         
-        result_text = message.content[0].text
+        result_text = message.content[0].text.strip()
+            
+        # Clean the response text to handle potential formatting issues
+        # Remove any markdown code blocks
+        if result_text.startswith('```'):
+            lines = result_text.split('\n')
+            result_text = '\n'.join(lines[1:-1]) if len(lines) > 2 else result_text
         
         # Extract JSON from Claude's response
         json_start_index = result_text.find('{')
@@ -356,12 +362,33 @@ The justification should reference specific indicator values and explain your re
         
         if json_start_index != -1 and json_end_index > json_start_index:
             json_string = result_text[json_start_index:json_end_index]
-            result = json.loads(json_string)
+            
+            # Clean the JSON string to remove control characters
+            json_string = json_string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+            # Remove multiple spaces
+            import re
+            json_string = re.sub(r'\s+', ' ', json_string)
+            
+            try:
+                result = json.loads(json_string)
+                # Ensure we have the required keys
+                if 'action' not in result or 'justification' not in result:
+                    raise ValueError("Missing required keys in JSON response")
+            except json.JSONDecodeError as json_err:
+                print(f"JSON parsing error: {json_err}")
+                print(f"Problematic JSON: {json_string[:200]}...")
+                raise ValueError("Invalid JSON format in API response")
         else:
             raise ValueError("No valid JSON object found in the response")
 
     except Exception as e:
-        result = {"action": "Error", "justification": f"Enhanced analysis error: {e}"}
+        print(f"Analysis error details: {e}")
+        # Ultimate fallback - simple analysis based on available indicators
+        result = get_fallback_analysis(chart_description)
+        # Clean the justification to avoid control characters
+        if "justification" in result:
+            result["justification"] = result["justification"].replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+            result["justification"] += " Note: Using fallback analysis due to API limitations."
 
     return fig, result
 
