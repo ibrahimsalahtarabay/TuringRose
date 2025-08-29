@@ -3,7 +3,7 @@ import streamlit as st
 import anthropic
 
 # API Keys
-CLAUDE_API_KEY = "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"  # Replace with your actual Claude API key
+CLAUDE_API_KEY = "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"
 ALPHA_VANTAGE_API_KEY = "NLKISJ9TBY2KCC6D"
 
 # Configure the Claude API
