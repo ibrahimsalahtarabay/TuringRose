@@ -325,8 +325,7 @@ def analyze_ticker(ticker, data, indicators, indicator_params=None):
     try:
         message = claude_client.messages.create(
             model=MODEL_NAME,
-            max_tokens=1000,
-            temperature=0.1,
+            max_tokens=1024,
             messages=[
                 {
                     "role": "user",
@@ -351,7 +350,7 @@ The justification should reference specific indicator values and explain your re
             ]
         )
         
-        result_text = message.content[0].text.strip()
+        result_text = message.content
             
         # Clean the response text to handle potential formatting issues
         # Remove any markdown code blocks
